@@ -51,6 +51,14 @@ Resources:
           Action: s3:GetObject
           Resource: !Sub "${Bucket.Arn}/*"
 
+  SubsetStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        Name: !Sub "${AWS::StackName}-subset"
+        Bucket: !Ref Bucket
+      TemplateURL: subset/cloudformation.yaml
+
   RestApi:
     Type: AWS::ApiGateway::RestApi
     Properties:
