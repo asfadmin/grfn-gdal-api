@@ -14,6 +14,11 @@ Parameters:
     MinValue: 1
     Default: 7
 
+Outputs:
+
+  ApiEndpoint:
+    Value: !Sub "https://${RestApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/"
+
 Resources:
 
   Bucket:
@@ -51,3 +56,15 @@ Resources:
     Properties:
       Name: !Ref AWS::StackName
       BodyS3Location: api.yaml
+
+  Deployment:
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      RestApiId: !Ref RestApi
+
+  Stage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      StageName: gdal
+      RestApiId: !Ref RestApi
+      DeploymentId: !Ref Deployment
