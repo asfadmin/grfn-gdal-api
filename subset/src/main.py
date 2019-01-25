@@ -8,4 +8,9 @@ config = json.loads(getenv('CONFIG'))
 
 
 def lambda_handler(event, context):
-    log.info('hello world')
+    log.info(event)
+    response = {
+      'statusCode': 200,
+      'body': 'hello world!',
+    }
+    return response
