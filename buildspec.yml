@@ -3,7 +3,7 @@ version: 0.2
 phases:
   build:
     commands:
-    - aws cloudformation package --template-file cloudformation-wrapper.yaml --s3-bucket $BUCKET --s3-prefix $PREFIX --output-template-file cloudformation-final.yaml
+    - aws cloudformation package --template-file cloudformation.yaml --s3-bucket $BUCKET --s3-prefix $PREFIX --output-template-file cloudformation-final.yaml
 artifacts:
   type: zip
   files:
