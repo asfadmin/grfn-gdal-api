@@ -45,3 +45,9 @@ Resources:
           Principal: "*"
           Action: s3:GetObject
           Resource: !Sub "${Bucket.Arn}/*"
+
+  RestApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: !Ref AWS::StackName
+      BodyS3Location: api.yaml
