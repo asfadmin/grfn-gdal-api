@@ -79,7 +79,7 @@ Resources:
                       schema:
                         $ref: "#/components/schemas/Empty"
               x-amazon-apigateway-integration:
-                type: aws
+                type: aws_proxy
                 uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SubsetStack.Outputs.LambdaArn}/invocations"
                 contentHandling: CONVERT_TO_TEXT
                 httpMethod: POST
