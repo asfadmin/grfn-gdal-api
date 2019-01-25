@@ -83,4 +83,4 @@ Resources:
       FunctionName: !GetAtt SubsetStack.Outputs.LambdaArn
       Action: lambda:InvokeFunction
       Principal: apigateway.amazonaws.com
-      SourceArn: !Sub "arn.aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApi}/*"
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApi}/*"
