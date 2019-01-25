@@ -10,7 +10,10 @@ config = json.loads(getenv('CONFIG'))
 def lambda_handler(event, context):
     log.info(event)
     response = {
-      'statusCode': 200,
-      'body': 'hello world!',
+      'statusCode': 307,
+      'headers': {
+        'Location': 'https://www.asf.alaska.edu/',
+      }
+      'body': None,
     }
     return response
