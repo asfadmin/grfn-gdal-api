@@ -73,25 +73,25 @@ Resources:
             get:
               responses:
                 '200':
-                  description: "200 response"
+                  description: 200 response
                   content:
                     application/json:
                       schema:
                         $ref: "#/components/schemas/Empty"
               x-amazon-apigateway-integration:
-                type: "aws"
+                type: aws
                 uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SubsetStack.Outputs.LambdaArn}/invocations"
-                contentHandling: "CONVERT_TO_TEXT"
-                httpMethod: "POST"
-                passthroughBehvaior: "when_no_match"
+                contentHandling: CONVERT_TO_TEXT
+                httpMethod: POST
+                passthroughBehvaior: when_no_match
                 responses:
                   default:
-                    statusCode: "200"
+                    statusCode: 200
         components:
           schemas:
             Empty:
-              title: "Empty Schema"
-              type: "object"
+              title: Empty Schema
+              type: object
 
   Deployment:
     Type: AWS::ApiGateway::Deployment
