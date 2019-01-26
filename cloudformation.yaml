@@ -14,6 +14,10 @@ Parameters:
     MinValue: 1
     Default: 7
 
+  ProductPath:
+    Type: String
+    Default: /vsicurl/https://s3.amazonaws.com/gdal-api-test/
+
   GdalLayerArn:
     Type: String
 
@@ -64,6 +68,7 @@ Resources:
       Parameters:
         Name: !Sub "${AWS::StackName}-subset"
         Bucket: !Ref Bucket
+        ProductPath: !Ref ProductPath
         GdalLayerArn: !Ref GdalLayerArn
         GdalDataPath: !Ref GdalDataPath
       TemplateURL: subset/cloudformation.yaml

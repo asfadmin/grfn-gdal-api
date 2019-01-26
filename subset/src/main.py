@@ -91,7 +91,7 @@ def lambda_handler(event, context):
     parms = event['queryStringParameters']
     output_key = path.basename(parms['product'])
     vsi_file = '/vsimem/image.tif'
-    ds = gdal.Open('/vsizip/vsicurl/https://hyp3-download.asf.alaska.edu/data/' + parms['product'])
+    ds = gdal.Open(config['product_path'] + parms['product'])
     ds.BuildOverviews("NEAREST", [2,4,8,16,32])
     ds2 = gdal.Translate(vsi_file, ds, projWin=[parms['ulx'], parms['uly'], parms['lrx'], parms['lry']], creationOptions = ['COMPRESS=DEFLATE','TILED=YES','COPY_SRC_OVERVIEWS=YES'])
     ds2 = None

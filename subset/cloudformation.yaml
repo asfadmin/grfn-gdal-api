@@ -8,6 +8,9 @@ Parameters:
   Bucket:
     Type: String
 
+  ProductPath:
+    Type: String
+
   GdalLayerArn:
     Type: String
 
@@ -73,7 +76,8 @@ Resources:
         Variables:
           CONFIG: !Sub |-
             {
-              "bucket": "${Bucket}"
+              "bucket": "${Bucket}",
+              "product_path": "${ProductPath}"
             }
           GDAL_DATA: !Ref GdalDataPath
           GDAL_HTTP_COOKIEFILE: /tmp/cookies.txt
