@@ -71,6 +71,32 @@ Resources:
         paths:
           /subset:
             get:
+              parameters:
+              - name: lrx
+                in: query
+                required: true
+                schema:
+                  type: string
+              - name: lry
+                in: query
+                required: true
+                schema:
+                  type: string
+              - name: ulx
+                in: query
+                required: true
+                schema:
+                  type: string
+              - name: uly
+                in: query
+                required: true
+                schema:
+                  type: string
+              - name: product
+                in: query
+                required: true
+                schema:
+                  type: string
               responses:
                 '200':
                   description: 200 response
@@ -78,6 +104,7 @@ Resources:
                     application/json:
                       schema:
                         $ref: "#/components/schemas/Empty"
+              x-amazon-apigateway-request-validator: basic
               x-amazon-apigateway-integration:
                 type: aws_proxy
                 uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SubsetStack.Outputs.LambdaArn}/invocations"
@@ -92,6 +119,10 @@ Resources:
             Empty:
               title: Empty Schema
               type: object
+        x-amazon-apigateway-request-validators:
+          basic:
+            validateRequestParameters: true
+            validateRequestBody: true
 
   Deployment:
     Type: AWS::ApiGateway::Deployment
