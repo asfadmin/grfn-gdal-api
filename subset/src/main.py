@@ -1,5 +1,5 @@
 from osgeo import gdal
-from os import getenv, basename
+from os import path, getenv
 import json
 from logging import getLogger
 import boto3
@@ -89,7 +89,7 @@ class SimpleVSIMEMFile(object):
 
 def lambda_handler(event, context):
     parms = event['queryStringParameters']
-    output_key = basename(parms['product'])
+    output_key = path.basename(parms['product'])
     vsi_file = '/vsimem/image.tif'
     ds = gdal.Open('/vsizip/vsicurl/https://hyp3-download.asf.alaska.edu/data/' + parms['product'])
     ds.BuildOverviews("NEAREST", [2,4,8,16,32])
