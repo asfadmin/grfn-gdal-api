@@ -63,7 +63,7 @@ Resources:
             Resource: !GetAtt DeadLetterQueue.Arn
           - Effect: Allow
             Action: s3:PutObject
-            Resource: "arn:aws:s3:::${Bucket}/*"
+            Resource: !Sub "arn:aws:s3:::${Bucket}/*"
 
   Lambda:
     Type: AWS::Lambda::Function
@@ -86,7 +86,7 @@ Resources:
       Handler: main.lambda_handler
       Layers:
       - !Ref GdalLayerArn
-      MemorySize: 128
+      MemorySize: 512
       Role: !GetAtt Role.Arn
       Runtime: python2.7
       Timeout: 30
