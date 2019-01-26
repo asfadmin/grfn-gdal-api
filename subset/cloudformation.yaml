@@ -8,6 +8,13 @@ Parameters:
   Bucket:
     Type: String
 
+  GdalLayerArn:
+    Type: String
+
+  GdalDataPath:
+    Type: String
+    Default: /opt/lib/data
+
 Outputs:
 
   LambdaArn:
@@ -68,7 +75,12 @@ Resources:
             {
               "bucket": "${Bucket}"
             }
+          GDAL_DATA: !Ref GdalDataPath
+          GDAL_HTTP_COOKIEFILE: /tmp/cookies.txt
+          GDAL_HTTP_COOKIEJAR: /tmp/cookies.txt
       Handler: main.lambda_handler
+      Layers:
+      - !Ref GdalLayerArn
       MemorySize: 128
       Role: !GetAtt Role.Arn
       Runtime: python2.7
