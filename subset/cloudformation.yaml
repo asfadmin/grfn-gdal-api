@@ -80,6 +80,7 @@ Resources:
               "product_path": "${ProductPath}"
             }
           GDAL_DATA: !Ref GdalDataPath
+          CPL_VSIL_CURL_CHUNK_SIZE: 10485760
           GDAL_HTTP_COOKIEFILE: /tmp/cookies.txt
           GDAL_HTTP_COOKIEJAR: /tmp/cookies.txt
       Handler: main.lambda_handler
