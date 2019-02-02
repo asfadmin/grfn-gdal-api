@@ -95,10 +95,10 @@ def lambda_handler(event, context):
     #ds.BuildOverviews("NEAREST", [2,4,8,16,32])
     ds2 = gdal.Translate(
         destName=vsi_file,
-        srcDs=ds,
+        srcDS=ds,
         projWin=[parms['ulx'], parms['uly'], parms['lrx'], parms['lry']],
         projWinSRS='WGS84',
-        creationOptions = ['COMPRESS=DEFLATE', 'TILED=YES', 'COPY_SRC_OVERVIEWS=YES']
+        creationOptions=['COMPRESS=DEFLATE', 'TILED=YES', 'COPY_SRC_OVERVIEWS=YES']
     )
     ds2 = None
     try:
