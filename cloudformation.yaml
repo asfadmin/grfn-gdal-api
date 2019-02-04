@@ -90,22 +90,30 @@ Resources:
                 in: query
                 required: true
                 schema:
-                  type: string
+                  type: number
+                  minimum: -180
+                  maximum: 180
               - name: lry
                 in: query
                 required: true
                 schema:
-                  type: string
+                  type: number
+                  minimum: -90
+                  maximum: 90
               - name: ulx
                 in: query
                 required: true
                 schema:
-                  type: string
+                  type: number
+                  minimum: -180
+                  maximum: 180
               - name: uly
                 in: query
                 required: true
                 schema:
-                  type: string
+                  type: number
+                  minimum: -90
+                  maximum: 90
               - name: product
                 in: query
                 required: true
