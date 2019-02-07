@@ -1,5 +1,5 @@
 from osgeo import gdal
-from os import path, getenv
+from os import path, getenv, chmod
 import json
 from logging import getLogger
 import boto3
@@ -8,6 +8,29 @@ import boto3
 log = getLogger()
 log.setLevel('INFO')
 config = json.loads(getenv('CONFIG'))
+s3 = boto3.resource('s3')
+secrets_manager = boto3.client('secretsmanager')
+
+
+def get_secret(secret_arn):
+    response = secrets_manager.get_secret_value(SecretId=secret_arn)
+    secret = json.loads(response['SecretString'])
+    return secret
+
+
+def write_content_to_netrc_file(netrc_content):
+    netrc_file = path.join(getenv('HOME'), '.netrc')
+    with open(netrc_file, 'w') as f:
+        f.write(netrc_content)
+    chmod(netrc_file, 0o600)
+
+
+def set_up_netrc(secret_arn):
+    netrc_content = get_secret(secret_arn)['netrc_content']
+    write_content_to_netrc_file(netrc_content)
+
+
+set_up_netrc(config['secret_arn'])
 
 
 class SimpleVSIMemFileError(Exception):
@@ -103,7 +126,6 @@ def lambda_handler(event, context):
     ds2 = None
     try:
         vsimem_file = SimpleVSIMEMFile(vsi_file)
-        s3 = boto3.resource('s3')
         obj = s3.Object(bucket_name=config['bucket'], key=output_key)
         obj.put(Body=vsimem_file)
     finally:

@@ -18,6 +18,9 @@ Parameters:
     Type: String
     Default: /opt/lib/data
 
+  SecretArn:
+    Type: String
+
 Outputs:
 
   LambdaArn:
@@ -64,6 +67,9 @@ Resources:
           - Effect: Allow
             Action: s3:PutObject
             Resource: !Sub "arn:aws:s3:::${Bucket}/*"
+          - Effect: Allow
+            Action: secretsmanager:getSecretValue
+            Resource: !Ref SecretArn
 
   Lambda:
     Type: AWS::Lambda::Function
@@ -77,12 +83,14 @@ Resources:
           CONFIG: !Sub |-
             {
               "bucket": "${Bucket}",
-              "product_path": "${ProductPath}"
+              "product_path": "${ProductPath}",
+              "secret_arn": "${SecretArn}"
             }
           GDAL_DATA: !Ref GdalDataPath
           CPL_VSIL_CURL_CHUNK_SIZE: 10485760
           GDAL_HTTP_COOKIEFILE: /tmp/cookies.txt
           GDAL_HTTP_COOKIEJAR: /tmp/cookies.txt
+          HOME: /tmp
       Handler: main.lambda_handler
       Layers:
       - !Ref GdalLayerArn
