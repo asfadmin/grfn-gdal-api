@@ -7,7 +7,7 @@ Parameters:
 
   LogPrefix:
     Type: String
-    Default: aws-s3-access/
+    Default: s3-access/
 
   StorageExpirationInDays:
     Type: Number
@@ -68,7 +68,7 @@ Resources:
           ExpirationInDays: !Ref StorageExpirationInDays
       LoggingConfiguration:
         DestinationBucketName: !Ref LogBucket
-        LogFilePrefix: !Sub "${LogPrefix}${AWS::StackName}"
+        LogFilePrefix: !Sub "${LogPrefix}${AWS::StackName}/"
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         IgnorePublicAcls: true
@@ -113,44 +113,26 @@ Resources:
               - name: lrx
                 in: query
                 required: true
-                schema:
-                  type: number
-                  minimum: -180
-                  maximum: 180
               - name: lry
                 in: query
                 required: true
-                schema:
-                  type: number
-                  minimum: -90
-                  maximum: 90
               - name: ulx
                 in: query
                 required: true
-                schema:
-                  type: number
-                  minimum: -180
-                  maximum: 180
               - name: uly
                 in: query
                 required: true
-                schema:
-                  type: number
-                  minimum: -90
-                  maximum: 90
               - name: product
                 in: query
                 required: true
-                schema:
-                  type: string
               responses:
-                '200':
-                  description: 200 response
-                  content:
-                    application/json:
-                      schema:
-                        $ref: "#/components/schemas/Empty"
-              x-amazon-apigateway-request-validator: basic
+                '3XX':
+                  description: redirection
+                '4XX':
+                  description: client error
+                '5XX':
+                  description: server error
+              x-amazon-apigateway-request-validator: parameters-only
               x-amazon-apigateway-integration:
                 type: aws_proxy
                 uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SubsetStack.Outputs.LambdaArn}/invocations"
@@ -160,15 +142,10 @@ Resources:
                 responses:
                   default:
                     statusCode: 200
-        components:
-          schemas:
-            Empty:
-              title: Empty Schema
-              type: object
         x-amazon-apigateway-request-validators:
-          basic:
+          parameters-only:
             validateRequestParameters: true
-            validateRequestBody: true
+            validateRequestBody: false
 
   Deployment:
     Type: AWS::ApiGateway::Deployment
