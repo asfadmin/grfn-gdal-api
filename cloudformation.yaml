@@ -25,12 +25,35 @@ Parameters:
     Type: String
     Default: /opt/lib/data
 
+  UrsHostname:
+    Type: String
+    Default: urs.earthdata.nasa.gov
+    AllowedValues:
+    - urs.earthdata.nasa.gov
+    - uat.urs.earthdata.nasa.gov
+
+  UrsUsername:
+    Type: String
+
+  UrsPassword:
+    Type: String
+    NoEcho: true
+
 Outputs:
 
   ApiEndpoint:
     Value: !Sub "https://${RestApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/"
 
 Resources:
+
+  Secret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Ref AWS::StackName
+      SecretString: !Sub |-
+        {
+          "netrc_content": "machine ${UrsHostname} login ${UrsUsername} password ${UrsPassword}"
+        }
 
   Bucket:
     Type: AWS::S3::Bucket
@@ -71,6 +94,7 @@ Resources:
         ProductPath: !Ref ProductPath
         GdalLayerArn: !Ref GdalLayerArn
         GdalDataPath: !Ref GdalDataPath
+        SecretArn: !Ref Secret
       TemplateURL: subset/cloudformation.yaml
 
   RestApi:
