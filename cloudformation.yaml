@@ -7,7 +7,7 @@ Parameters:
 
   LogPrefix:
     Type: String
-    Default: aws-s3-access/
+    Default: s3-access/
 
   StorageExpirationInDays:
     Type: Number
@@ -68,7 +68,7 @@ Resources:
           ExpirationInDays: !Ref StorageExpirationInDays
       LoggingConfiguration:
         DestinationBucketName: !Ref LogBucket
-        LogFilePrefix: !Sub "${LogPrefix}${AWS::StackName}"
+        LogFilePrefix: !Sub "${LogPrefix}${AWS::StackName}/"
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         IgnorePublicAcls: true
