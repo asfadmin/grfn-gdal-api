@@ -2,6 +2,7 @@ from osgeo import gdal
 from os import path, getenv, chmod
 import json
 from logging import getLogger
+from uuid import uuid4
 import boto3
 
 
@@ -110,9 +111,17 @@ class SimpleVSIMEMFile(object):
             raise SimpleVSIMemFileError(gdal.VSIGetLastErrorMsg())
 
 
+def get_output_key(product):
+    prefix = uuid4()
+    basename = path.basename(product)
+    basename_without_extension = path.splitext(basename)[0]
+    output_key = '{0}/{1}_subset.tif'.format(prefix, basename_without_extension)
+    return output_key
+
+
 def lambda_handler(event, context):
     parms = event['queryStringParameters']
-    output_key = path.basename(parms['product'])
+    output_key = get_output_key(parms['product'])
     vsi_file = '/vsimem/image.tif'
     ds = gdal.Open(config['product_path'] + parms['product'])
     #ds.BuildOverviews("NEAREST", [2,4,8,16,32])

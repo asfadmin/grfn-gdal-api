@@ -12,7 +12,7 @@ Parameters:
   StorageExpirationInDays:
     Type: Number
     MinValue: 1
-    Default: 7
+    Default: 1
 
   ProductPath:
     Type: String
