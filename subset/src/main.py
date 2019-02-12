@@ -138,7 +138,7 @@ def lambda_handler(event, context):
         obj = s3.Object(bucket_name=config['bucket'], key=output_key)
         obj.put(Body=vsimem_file)
     finally:
-        vsimem_file = None
+        gdal.Unlink('/vsimem/image.tif')
     response = {
         'statusCode': 307,
         'headers': {
