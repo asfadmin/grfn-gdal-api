@@ -104,7 +104,7 @@ Resources:
       Body:
         openapi: 3.0.1
         info:
-          title: gdal-api
+          title: geospatial-services
           version: 0.0.1
         paths:
           /subset:
@@ -153,7 +153,7 @@ Resources:
   Stage:
     Type: AWS::ApiGateway::Stage
     Properties:
-      StageName: gdal
+      StageName: geospatial-services
       RestApiId: !Ref RestApi
       DeploymentId: !Ref Deployment
 
