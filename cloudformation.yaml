@@ -153,7 +153,7 @@ Resources:
   Stage:
     Type: AWS::ApiGateway::Stage
     Properties:
-      StageName: geospatial-services
+      StageName: geospatial
       RestApiId: !Ref RestApi
       DeploymentId: !Ref Deployment
 
