@@ -103,7 +103,7 @@ Resources:
         SecretArn: !Ref Secret
       TemplateURL: subset/cloudformation.yaml
 
-  DomainName:
+  CustomDomainName:
     Type: AWS::ApiGateway::DomainName
     Properties:
       DomainName: !Ref DomainName
@@ -112,7 +112,7 @@ Resources:
   BasePathMapping:
     Type: AWS::ApiGateway::BasePathMapping
     Properties:
-      DomainName: !Ref DomainName
+      DomainName: !Ref CustomDomainName
       RestApiId: !Ref RestApi
 
   RestApi:
