@@ -110,7 +110,7 @@ Resources:
       CertificateArn: !Ref CertificateArn
 
   BasePathMapping:
-    Tyep: AWS::ApiGateway::BasePathMapping
+    Type: AWS::ApiGateway::BasePathMapping
     Properties:
       DomainName: !Ref DomainName
       RestApiId: !Ref RestApi
