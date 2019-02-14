@@ -39,6 +39,12 @@ Parameters:
     Type: String
     NoEcho: true
 
+  DomainName:
+    Type: String
+
+  CertificateArn:
+    Type: String
+
 Outputs:
 
   ApiEndpoint:
@@ -96,6 +102,18 @@ Resources:
         GdalDataPath: !Ref GdalDataPath
         SecretArn: !Ref Secret
       TemplateURL: subset/cloudformation.yaml
+
+  CustomDomainName:
+    Type: AWS::ApiGateway::DomainName
+    Properties:
+      DomainName: !Ref DomainName
+      CertificateArn: !Ref CertificateArn
+
+  BasePathMapping:
+    Type: AWS::ApiGateway::BasePathMapping
+    Properties:
+      DomainName: !Ref CustomDomainName
+      RestApiId: !Ref RestApi
 
   RestApi:
     Type: AWS::ApiGateway::RestApi
