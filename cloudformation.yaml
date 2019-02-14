@@ -113,7 +113,7 @@ Resources:
     Tyep: AWS::ApiGateway::BasePathMapping
     Properties:
       DomainName: !Ref DomainName
-      RestApiId: !Ref ReestApi
+      RestApiId: !Ref RestApi
 
   RestApi:
     Type: AWS::ApiGateway::RestApi
