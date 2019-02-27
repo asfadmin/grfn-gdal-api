@@ -1,9 +1,11 @@
 from osgeo import gdal
-from os import path, getenv, chmod
+from os import path, getenv, chmod, remove
 import json
 from logging import getLogger
+from urlparse import urljoin
 from uuid import uuid4
 import boto3
+from requests import Session
 
 
 log = getLogger()
@@ -11,6 +13,7 @@ log.setLevel('INFO')
 config = json.loads(getenv('CONFIG'))
 s3 = boto3.resource('s3')
 secrets_manager = boto3.client('secretsmanager')
+session = Session()
 
 
 def get_secret(secret_arn):
@@ -111,39 +114,69 @@ class SimpleVSIMEMFile(object):
             raise SimpleVSIMemFileError(gdal.VSIGetLastErrorMsg())
 
 
-def get_output_key(product):
+def get_output_key(product, layer):
     prefix = uuid4()
-    basename = path.basename(product)
-    basename_without_extension = path.splitext(basename)[0]
-    output_key = '{0}/{1}_subset.tif'.format(prefix, basename_without_extension)
+    product_basename = path.basename(product)
+    product_basename_without_extension = path.splitext(product_basename)[0]
+    layer_basename = path.basename(layer)
+    output_key = '{0}/{1}_{2}.tif'.format(prefix, product_basename_without_extension, layer_basename)
     return output_key
+
+
+def download_file(host_url, product):
+    download_url = urljoin(host_url, product)
+    response = session.get(download_url)
+    response.raise_for_status()
+    file_name = path.join('/tmp', product)
+    with open(file_name, 'wb') as f:
+        for block in response.iter_content(1024):
+            f.write(block)
+    return file_name
+
+
+def get_redirect_response(bucket, key):
+    return {
+        'statusCode': 307,
+        'headers': {
+            'Location': 'https://s3.amazonaws.com/{0}/{1}'.format(bucket, key),
+        },
+        'body': None,
+    }
+
+
+def translate_netcdf_to_geotiff(input_datasource, output_datasource):
+    handle = gdal.Open(input_datasource)
+    gdal.Translate(
+        destName=output_datasource,
+        srcDS=handle,
+        creationOptions=['COMPRESS=DEFLATE', 'TILED=YES', 'COPY_SRC_OVERVIEWS=YES']
+    )
+    handle = None
+
+
+def upload_vsimem_to_s3(vsimem_datasource, bucket, key):
+    vsimem_file = SimpleVSIMEMFile(vsimem_datasource)
+    obj = s3.Object(bucket_name=bucket, key=key)
+    obj.put(Body=vsimem_file)
 
 
 def lambda_handler(event, context):
     parms = event['queryStringParameters']
-    output_key = get_output_key(parms['product'])
-    vsi_file = '/vsimem/image.tif'
-    ds = gdal.Open(config['product_path'] + parms['product'])
-    #ds.BuildOverviews("NEAREST", [2,4,8,16,32])
-    ds2 = gdal.Translate(
-        destName=vsi_file,
-        srcDS=ds,
-        projWin=[parms['ulx'], parms['uly'], parms['lrx'], parms['lry']],
-        projWinSRS='WGS84',
-        creationOptions=['COMPRESS=DEFLATE', 'TILED=YES', 'COPY_SRC_OVERVIEWS=YES']
-    )
-    ds2 = None
+
+    input_file_name = download_file(config['product_path'], parms['product'])
+
+    input_datasource = 'NETCDF:"{0}"://{1}'.format(input_file_name, parms['layer'])
+    vsimem_datasource = '/vsimem/image.tif'
     try:
-        vsimem_file = SimpleVSIMEMFile(vsi_file)
-        obj = s3.Object(bucket_name=config['bucket'], key=output_key)
-        obj.put(Body=vsimem_file)
+        translate_netcdf_to_geotiff(input_datasource, vsimem_datasource)
     finally:
-        gdal.Unlink(vsi_file)
-    response = {
-        'statusCode': 307,
-        'headers': {
-            'Location': 'https://s3.amazonaws.com/{0}/{1}'.format(config['bucket'], output_key),
-        },
-        'body': None,
-    }
+        remove(input_file_name)
+
+    output_key = get_output_key(parms['product'], parms['layer'])
+    try:
+        upload_vsimem_to_s3(vsimem_datasource, config['bucket'], output_key)
+    finally:
+        gdal.Unlink(vsimem_datasource)
+
+    response = get_redirect_response(config['bucket'], output_key)
     return response

@@ -87,14 +87,11 @@ Resources:
               "secret_arn": "${SecretArn}"
             }
           GDAL_DATA: !Ref GdalDataPath
-          CPL_VSIL_CURL_CHUNK_SIZE: 10485760
-          GDAL_HTTP_COOKIEFILE: /tmp/cookies.txt
-          GDAL_HTTP_COOKIEJAR: /tmp/cookies.txt
           HOME: /tmp
       Handler: main.lambda_handler
       Layers:
       - !Ref GdalLayerArn
-      MemorySize: 512
+      MemorySize: 3008
       Role: !GetAtt Role.Arn
       Runtime: python2.7
       Timeout: 30

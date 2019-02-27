@@ -16,7 +16,7 @@ Parameters:
 
   ProductPath:
     Type: String
-    Default: /vsicurl/https://s3.amazonaws.com/gdal-api-test/
+    Default: https://grfn.asf.alaska.edu/door/download/
 
   GdalLayerArn:
     Type: String
@@ -91,17 +91,17 @@ Resources:
           Action: s3:GetObject
           Resource: !Sub "${Bucket.Arn}/*"
 
-  SubsetStack:
+  ReformatStack:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
-        Name: !Sub "${AWS::StackName}-subset"
+        Name: !Sub "${AWS::StackName}-reformat"
         Bucket: !Ref Bucket
         ProductPath: !Ref ProductPath
         GdalLayerArn: !Ref GdalLayerArn
         GdalDataPath: !Ref GdalDataPath
         SecretArn: !Ref Secret
-      TemplateURL: subset/cloudformation.yaml
+      TemplateURL: reformat/cloudformation.yaml
 
   CustomDomainName:
     Type: AWS::ApiGateway::DomainName
@@ -125,22 +125,13 @@ Resources:
           title: geospatial-services
           version: 0.0.1
         paths:
-          /subset:
+          /reformat:
             get:
               parameters:
-              - name: lrx
-                in: query
-                required: true
-              - name: lry
-                in: query
-                required: true
-              - name: ulx
-                in: query
-                required: true
-              - name: uly
-                in: query
-                required: true
               - name: product
+                in: query
+                required: true
+              - name: layer
                 in: query
                 required: true
               responses:
@@ -151,7 +142,7 @@ Resources:
               x-amazon-apigateway-request-validator: parameters-only
               x-amazon-apigateway-integration:
                 type: aws_proxy
-                uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SubsetStack.Outputs.LambdaArn}/invocations"
+                uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ReformatStack.Outputs.LambdaArn}/invocations"
                 contentHandling: CONVERT_TO_TEXT
                 httpMethod: POST
                 passthroughBehvaior: when_no_match
@@ -163,7 +154,7 @@ Resources:
             validateRequestParameters: true
             validateRequestBody: false
 
-  Deployment:
+  DeploymentREPLACE_ME:
     Type: AWS::ApiGateway::Deployment
     Properties:
       RestApiId: !Ref RestApi
@@ -173,12 +164,12 @@ Resources:
     Properties:
       StageName: geospatial
       RestApiId: !Ref RestApi
-      DeploymentId: !Ref Deployment
+      DeploymentId: !Ref DeploymentREPLACE_ME
 
   LambdaPermission:
     Type: AWS::Lambda::Permission
     Properties:
-      FunctionName: !GetAtt SubsetStack.Outputs.LambdaArn
+      FunctionName: !GetAtt ReformatStack.Outputs.LambdaArn
       Action: lambda:InvokeFunction
       Principal: apigateway.amazonaws.com
       SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApi}/*"
