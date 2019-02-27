@@ -154,7 +154,7 @@ Resources:
             validateRequestParameters: true
             validateRequestBody: false
 
-  Deployment:
+  DeploymentREPLACE_ME:
     Type: AWS::ApiGateway::Deployment
     Properties:
       RestApiId: !Ref RestApi
@@ -164,7 +164,7 @@ Resources:
     Properties:
       StageName: geospatial
       RestApiId: !Ref RestApi
-      DeploymentId: !Ref Deployment
+      DeploymentId: !Ref DeploymentREPLACE_ME
 
   LambdaPermission:
     Type: AWS::Lambda::Permission

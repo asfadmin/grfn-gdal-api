@@ -4,7 +4,8 @@ phases:
   build:
     commands:
     - pip install -r reformat/requirements.txt -t reformat/src/
-    - aws cloudformation package --template-file cloudformation.yaml --s3-bucket $BUCKET --s3-prefix $PREFIX --output-template-file cloudformation-final.yaml
+    - sed "s/REPLACE_ME/$(openssl rand -hex 4)/" cloudformation.yaml > cloudformation-replaced.yaml
+    - aws cloudformation package --template-file cloudformation-replaced.yaml --s3-bucket $BUCKET --s3-prefix $PREFIX --output-template-file cloudformation-final.yaml
 artifacts:
   type: zip
   files:

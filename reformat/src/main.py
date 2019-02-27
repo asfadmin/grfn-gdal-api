@@ -1,5 +1,5 @@
 from osgeo import gdal
-from os import path, getenv, chmod
+from os import path, getenv, chmod, remove
 import json
 from logging import getLogger
 from urlparse import urljoin
@@ -133,33 +133,50 @@ def download_file(host_url, product):
             f.write(block)
     return file_name
 
-def lambda_handler(event, context):
-    parms = event['queryStringParameters']
-    log.info(parms)
-    file_name = download_file(config['product_path'], parms['product'])
-    output_key = get_output_key(parms['product'], parms['layer'])
-    vsi_file = '/vsimem/image.tif'
-    input_ds = 'NETCDF:"{0}"://{1}'.format(file_name, parms['layer'])
-    log.info(file_name)
-    log.info(input_ds)
-    ds = gdal.Open(input_ds)
-    ds2 = gdal.Translate(
-        destName=vsi_file,
-        srcDS=ds,
-        creationOptions=['COMPRESS=DEFLATE', 'TILED=YES', 'COPY_SRC_OVERVIEWS=YES']
-    )
-    ds2 = None
-    try:
-        vsimem_file = SimpleVSIMEMFile(vsi_file)
-        obj = s3.Object(bucket_name=config['bucket'], key=output_key)
-        obj.put(Body=vsimem_file)
-    finally:
-        gdal.Unlink(vsi_file)
-    response = {
+
+def get_redirect_response(bucket, key):
+    return {
         'statusCode': 307,
         'headers': {
-            'Location': 'https://s3.amazonaws.com/{0}/{1}'.format(config['bucket'], output_key),
+            'Location': 'https://s3.amazonaws.com/{0}/{1}'.format(bucket, key),
         },
         'body': None,
     }
+
+
+def translate_netcdf_to_geotiff(input_datasource, output_datasource):
+    handle = gdal.Open(input_datasource)
+    gdal.Translate(
+        destName=output_datasource,
+        srcDS=handle,
+        creationOptions=['COMPRESS=DEFLATE', 'TILED=YES', 'COPY_SRC_OVERVIEWS=YES']
+    )
+    handle = None
+
+
+def upload_vsimem_to_s3(vsimem_datasource, bucket, key):
+    vsimem_file = SimpleVSIMEMFile(vsimem_datasource)
+    obj = s3.Object(bucket_name=bucket, key=key)
+    obj.put(Body=vsimem_file)
+
+
+def lambda_handler(event, context):
+    parms = event['queryStringParameters']
+
+    input_file_name = download_file(config['product_path'], parms['product'])
+
+    input_datasource = 'NETCDF:"{0}"://{1}'.format(input_file_name, parms['layer'])
+    vsimem_datasource = '/vsimem/image.tif'
+    try:
+        translate_netcdf_to_geotiff(input_datasource, vsimem_datasource)
+    finally:
+        remove(input_file_name)
+
+    output_key = get_output_key(parms['product'], parms['layer'])
+    try:
+        upload_vsimem_to_s3(vsimem_datasource, config['bucket'], output_key)
+    finally:
+        gdal.Unlink(vsimem_datasource)
+
+    response = get_redirect_response(config['bucket'], output_key)
     return response
