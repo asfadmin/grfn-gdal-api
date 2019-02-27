@@ -2,8 +2,10 @@ from osgeo import gdal
 from os import path, getenv, chmod
 import json
 from logging import getLogger
+from urlparse import urljoin
 from uuid import uuid4
 import boto3
+from requests import Session
 
 
 log = getLogger()
@@ -11,6 +13,7 @@ log.setLevel('INFO')
 config = json.loads(getenv('CONFIG'))
 s3 = boto3.resource('s3')
 secrets_manager = boto3.client('secretsmanager')
+session = Session()
 
 
 def get_secret(secret_arn):
@@ -111,25 +114,38 @@ class SimpleVSIMEMFile(object):
             raise SimpleVSIMemFileError(gdal.VSIGetLastErrorMsg())
 
 
-def get_output_key(product):
+def get_output_key(product, layer):
     prefix = uuid4()
-    basename = path.basename(product)
-    basename_without_extension = path.splitext(basename)[0]
-    output_key = '{0}/{1}_subset.tif'.format(prefix, basename_without_extension)
+    product_basename = path.basename(product)
+    product_basename_without_extension = path.splitext(product_basename)[0]
+    layer_basename = path.basename(layer)
+    output_key = '{0}/{1}_{2}.tif'.format(prefix, product_basename_without_extension, layer_basename)
     return output_key
 
 
+def download_file(host_url, product):
+    download_url = urljoin(host_url, product)
+    response = session.get(download_url)
+    response.raise_for_status()
+    file_name = path.join('/tmp', product)
+    with open(file_name, 'wb') as f:
+        for block in response.iter_content(1024):
+            f.write(block)
+    return file_name
+
 def lambda_handler(event, context):
     parms = event['queryStringParameters']
-    output_key = get_output_key(parms['product'])
+    log.info(parms)
+    file_name = download_file(config['product_path'], parms['product'])
+    output_key = get_output_key(parms['product'], parms['layer'])
     vsi_file = '/vsimem/image.tif'
-    ds = gdal.Open(config['product_path'] + parms['product'])
-    #ds.BuildOverviews("NEAREST", [2,4,8,16,32])
+    input_ds = 'NETCDF:"{0}"://{1}'.format(file_name, parms['layer'])
+    log.info(file_name)
+    log.info(input_ds)
+    ds = gdal.Open(input_ds)
     ds2 = gdal.Translate(
         destName=vsi_file,
         srcDS=ds,
-        projWin=[parms['ulx'], parms['uly'], parms['lrx'], parms['lry']],
-        projWinSRS='WGS84',
         creationOptions=['COMPRESS=DEFLATE', 'TILED=YES', 'COPY_SRC_OVERVIEWS=YES']
     )
     ds2 = None
