@@ -119,7 +119,7 @@ def get_output_key(product, layer):
     product_basename = path.basename(product)
     product_basename_without_extension = path.splitext(product_basename)[0]
     layer_basename = path.basename(layer)
-    output_key = '{0}/{1}_{2}.tif'.format(prefix, product_basename_without_extension, layer_basename)
+    output_key = '{0}/{1}-{2}.tif'.format(prefix, product_basename_without_extension, layer_basename)
     return output_key
 
 
