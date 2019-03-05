@@ -3,7 +3,7 @@ version: 0.2
 phases:
   build:
     commands:
-    - sed "s/REPLACE_ME/$(openssl rand -hex 4)/" cloudformation.yaml > cloudformation-replaced.yaml
+    - sed "s/REPLACEME/$(openssl rand -hex 4)/" cloudformation.yaml > cloudformation-replaced.yaml
     - aws cloudformation package --template-file cloudformation-replaced.yaml --s3-bucket $BUCKET --s3-prefix $PREFIX --output-template-file cloudformation-final.yaml
 artifacts:
   type: zip
