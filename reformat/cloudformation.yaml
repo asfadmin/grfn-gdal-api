@@ -93,5 +93,5 @@ Resources:
       - !Ref GdalLayerArn
       MemorySize: 3008
       Role: !GetAtt Role.Arn
-      Runtime: python2.7
+      Runtime: python3.8
       Timeout: 30
