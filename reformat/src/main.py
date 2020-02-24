@@ -2,7 +2,7 @@ from osgeo import gdal
 from os import path, getenv, chmod, remove
 import json
 from logging import getLogger
-from urlparse import urljoin
+from urllib.parse import urljoin
 from uuid import uuid4
 import boto3
 from requests import Session
