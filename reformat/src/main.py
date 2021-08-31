@@ -2,7 +2,7 @@ from osgeo import gdal
 from os import path, getenv, chmod, remove
 import json
 from logging import getLogger
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 from uuid import uuid4
 import boto3
 from requests import Session
@@ -139,7 +139,6 @@ def get_redirect_response(bucket, key):
         'statusCode': 307,
         'headers': {
             'Location': 'https://s3.amazonaws.com/{0}/{1}'.format(bucket, key),
-            'Access-Control-Allow-Origin': '*',
         },
         'body': None,
     }
@@ -161,6 +160,16 @@ def upload_vsimem_to_s3(vsimem_datasource, bucket, key):
     obj.put(Body=vsimem_file)
 
 
+def get_cors_headers(origin):
+    url_parsed = urlparse(origin)
+    if url_parsed.netloc.endswith('asf.alaska.edu') and url_parsed.scheme == 'https':
+        return {
+            'Access-Control-Allow-Origin': origin,
+            'Access-Control-Allow-Credentials': 'true',
+        }
+    return {}
+
+
 def lambda_handler(event, context):
     parms = event['queryStringParameters']
 
@@ -180,4 +189,6 @@ def lambda_handler(event, context):
         gdal.Unlink(vsimem_datasource)
 
     response = get_redirect_response(config['bucket'], output_key)
+    cors_headers = get_cors_headers(context['headers'].get('Origin'))
+    response['headers'].update(cors_headers)
     return response
