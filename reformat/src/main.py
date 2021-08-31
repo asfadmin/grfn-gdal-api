@@ -162,9 +162,9 @@ def upload_vsimem_to_s3(vsimem_datasource, bucket, key):
 
 def get_cors_headers(origin):
     url_parsed = urlparse(origin)
-    if url_parsed.netloc.endswith('asf.alaska.edu') and url_parsed.scheme == 'https':
+    if url_parsed.netloc.endswith('asf.alaska.edu'):
         return {
-            'Access-Control-Allow-Origin': url_parsed.netloc,
+            'Access-Control-Allow-Origin': origin,
             'Access-Control-Allow-Credentials': 'true',
         }
     return {}
@@ -190,6 +190,7 @@ def lambda_handler(event, context):
         gdal.Unlink(vsimem_datasource)
 
     response = get_redirect_response(config['bucket'], output_key)
-    cors_headers = get_cors_headers(event['headers'].get('origin'))
-    response['headers'].update(cors_headers)
+    if 'origin' in event['headers']:
+        cors_headers = get_cors_headers(event['headers']['origin'])
+        response['headers'].update(cors_headers)
     return response
