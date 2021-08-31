@@ -143,6 +143,7 @@ def get_redirect_response(bucket, key):
         'body': None,
     }
 
+
 def translate_netcdf_to_geotiff(input_datasource, output_datasource):
     handle = gdal.Open(input_datasource)
     gdal.Translate(
