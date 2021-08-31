@@ -139,6 +139,7 @@ def get_redirect_response(bucket, key):
         'statusCode': 307,
         'headers': {
             'Location': 'https://s3.amazonaws.com/{0}/{1}'.format(bucket, key),
+            'Access-Control-Allow-Origin': '*',
         },
         'body': None,
     }
