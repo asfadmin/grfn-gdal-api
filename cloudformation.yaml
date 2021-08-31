@@ -85,6 +85,7 @@ Resources:
               - HEAD
             AllowedOrigins:
               - "*.asf.alaska.edu"
+              - "null"
 
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
