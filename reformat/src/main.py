@@ -162,7 +162,7 @@ def upload_vsimem_to_s3(vsimem_datasource, bucket, key):
 
 def get_cors_headers(origin):
     url_parsed = urlparse(origin)
-    if url_parsed.netloc.endswith('asf.alaska.edu') and url_parsed.scheme == 'https':
+    if url_parsed.netloc.endswith('asf.alaska.edu'):
         return {
             'Access-Control-Allow-Origin': origin,
             'Access-Control-Allow-Credentials': 'true',
