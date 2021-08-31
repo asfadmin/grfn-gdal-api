@@ -171,6 +171,7 @@ def get_cors_headers(origin):
 
 
 def lambda_handler(event, context):
+    print(event)
     parms = event['queryStringParameters']
 
     input_file_name = download_file(config['product_path'], parms['product'])
