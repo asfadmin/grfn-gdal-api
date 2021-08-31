@@ -164,7 +164,7 @@ def get_cors_headers(origin):
     url_parsed = urlparse(origin)
     if url_parsed.netloc.endswith('asf.alaska.edu') and url_parsed.scheme == 'https':
         return {
-            'Access-Control-Allow-Origin': origin,
+            'Access-Control-Allow-Origin': url_parsed.netloc,
             'Access-Control-Allow-Credentials': 'true',
         }
     return {}
