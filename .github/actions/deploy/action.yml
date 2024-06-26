@@ -1,0 +1,65 @@
+name: Deploy to AWS
+
+inputs:
+  LOG_BUCKET:
+    required: true
+  LOG_PREFIX:
+    required: true
+  STORAGE_EXPIRATION_IN_DAYS:
+    required: true
+  PRODUCT_PATH:
+    required: true
+  GDAL_LAYER_ARN:
+    required: true
+  GDAL_DATA_PATH:
+    required: true
+  URS_HOSTNAME:
+    required: true
+  URS_USERNAME:
+    required: true
+  URS_PASSWORD:
+    required: true
+  DOMAIN_NAME:
+    required: true
+  CERTIFICATE_ARN:
+    required: true
+  TEMPLATE_BUCKET:
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ inputs.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - uses: actions/setup-python@v5
+      with:
+        python-version: 3.8
+
+    - shell: bash
+      run: |
+        pip install -r requirements-reformat.txt -t reformat/src/
+        sed "s/REPLACE_ME/$(openssl rand -hex 4)/" cloudformation.yml > cloudformation-replaced.yml
+        aws cloudformation package \
+          --template-file cloudformation-replaced.yml \
+          --s3-bucket ${{ inputs.TEMPLATE_BUCKET }} \
+          --output-template-file packaged.yml
+        aws cloudformation deploy \
+          --stack-name ${{ inputs.STACK_NAME }} \
+          --template-file packaged.yml \
+          --capabilities CAPABILITY_IAM \
+          --parameter-overrides \
+            LogBucket=${{ inputs.LOG_BUCKET }}
+            LogPrefix=${{ inputs.LOG_PREFIX }}
+            StorageExpirationInDays=${{ inputs.STORAGE_EXPIRATION_IN_DAYS }}
+            ProductPath=${{ inputs.PRODUCT_PATH }}
+            GdalLayerArn=${{ inputs.GDAL_LAYER_ARN }}
+            GdalDataPath=${{ inputs.GDAL_DATA_PATH }}
+            UrsHostname=${{ inputs.URS_HOSTNAME }}
+            UrsUsername=${{ inputs.URS_USERNAME }}
+            UrsPassword=${{ inputs.URS_PASSWORD }}
+            DomainName=${{ inputs.DOMAIN_NAME }}
+            CertificateArn=${{ inputs.CERTIFICATE_ARN }}

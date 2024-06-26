@@ -109,7 +109,7 @@ Resources:
         GdalLayerArn: !Ref GdalLayerArn
         GdalDataPath: !Ref GdalDataPath
         SecretArn: !Ref Secret
-      TemplateURL: reformat/cloudformation.yaml
+      TemplateURL: reformat/cloudformation.yml
 
   CustomDomainName:
     Type: AWS::ApiGateway::DomainName

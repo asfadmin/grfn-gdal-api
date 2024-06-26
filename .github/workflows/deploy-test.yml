@@ -1,0 +1,32 @@
+name: Deploy to test
+
+on:
+  push:
+    branches:
+      - test
+
+concurrency: deploy-test
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: test
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/deploy
+        with:
+          LOG_BUCKET: grfn-logs
+          LOG_PREFIX: s3-access/
+          STORAGE_EXPIRATION_IN_DAYS: 1
+          PRODUCT_PATH: https://grfn-test.asf.alaska.edu/door/download/
+          GDAL_LAYER_ARN: ${{ secrets.GDAL_LAYER_ARN }}
+          GDAL_DATA_PATH: /opt/lib/data
+          URS_HOSTNAME: urs.earthdata.nasa.gov
+          URS_USERNAME: ${{ secrets.URS_USERNAME }}
+          URS_PASSWORD: ${{ secrets.URS_PASSWORD }}
+          DOMAIN_NAME: services-test.asf.alaska.edu
+          CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
+          TEMPLATE_BUCKET: cf-templates-uyq85q2un2ku-us-east-1
