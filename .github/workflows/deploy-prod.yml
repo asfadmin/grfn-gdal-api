@@ -18,6 +18,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/deploy
         with:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           LOG_BUCKET: grfn-logs
           LOG_PREFIX: s3-access/
           STORAGE_EXPIRATION_IN_DAYS: 1

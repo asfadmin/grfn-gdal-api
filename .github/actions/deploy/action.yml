@@ -1,6 +1,10 @@
 name: Deploy to AWS
 
 inputs:
+  AWS_ACCESS_KEY_ID:
+    required: true
+  AWS_SECRET_ACCESS_KEY:
+    required: true
   LOG_BUCKET:
     required: true
   LOG_PREFIX:
