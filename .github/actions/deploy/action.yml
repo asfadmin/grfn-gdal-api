@@ -42,7 +42,7 @@ runs:
     - shell: bash
       run: |
         pip install -r requirements-reformat.txt -t reformat/src/
-        sed "s/REPLACE_ME/$(openssl rand -hex 4)/" cloudformation.yml > cloudformation-replaced.yml
+        sed "s/REPLACEME/$(openssl rand -hex 4)/" cloudformation.yml > cloudformation-replaced.yml
         aws cloudformation package \
           --template-file cloudformation-replaced.yml \
           --s3-bucket ${{ inputs.TEMPLATE_BUCKET }} \
