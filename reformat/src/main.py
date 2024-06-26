@@ -1,10 +1,11 @@
-from osgeo import gdal
-from os import path, getenv, chmod, remove
 import json
 from logging import getLogger
+from os import chmod, getenv, path, remove
 from urllib.parse import urljoin, urlparse
 from uuid import uuid4
+
 import boto3
+from osgeo import gdal
 from requests import Session
 
 
