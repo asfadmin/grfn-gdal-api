@@ -13,4 +13,4 @@ jobs:
       release_branch: prod
       develop_branch: test
     secrets:
-      USER_TOKEN: ${{ secrets.TOOLS_BOT_PAK }}
+      USER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
