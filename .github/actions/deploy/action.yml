@@ -7,6 +7,8 @@ inputs:
     required: true
   CLOUDFORMATION_ROLE_ARN:
     required: true
+  STACK_NAME:
+    required: true
   LOG_BUCKET:
     required: true
   LOG_PREFIX:
@@ -56,7 +58,7 @@ runs:
           --stack-name ${{ inputs.STACK_NAME }} \
           --template-file packaged.yml \
           --role-name ${{ inputs.CLOUDFORMATION_ROLE_ARN }} \
-          --capabilities CAPABILITY_IAM \
+          --capabilities CAPABILITY_NAMED_IAM \
           --parameter-overrides \
             LogBucket="${{ inputs.LOG_BUCKET }}" \
             LogPrefix="${{ inputs.LOG_PREFIX }}" \
