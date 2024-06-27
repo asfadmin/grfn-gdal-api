@@ -58,14 +58,14 @@ runs:
           --role-name ${{ inputs.CLOUDFORMATION_ROLE_ARN }} \
           --capabilities CAPABILITY_IAM \
           --parameter-overrides \
-            LogBucket=${{ inputs.LOG_BUCKET }} \
-            LogPrefix=${{ inputs.LOG_PREFIX }} \
-            StorageExpirationInDays=${{ inputs.STORAGE_EXPIRATION_IN_DAYS }} \
-            ProductPath=${{ inputs.PRODUCT_PATH }} \
-            GdalLayerArn=${{ inputs.GDAL_LAYER_ARN }} \
-            GdalDataPath=${{ inputs.GDAL_DATA_PATH }} \
-            UrsHostname=${{ inputs.URS_HOSTNAME }} \
-            UrsUsername=${{ inputs.URS_USERNAME }} \
-            UrsPassword=${{ inputs.URS_PASSWORD }} \
-            DomainName=${{ inputs.DOMAIN_NAME }} \
-            CertificateArn=${{ inputs.CERTIFICATE_ARN }}
+            LogBucket="${{ inputs.LOG_BUCKET }}" \
+            LogPrefix="${{ inputs.LOG_PREFIX }}" \
+            StorageExpirationInDays="${{ inputs.STORAGE_EXPIRATION_IN_DAYS }}" \
+            ProductPath="${{ inputs.PRODUCT_PATH }}" \
+            GdalLayerArn="${{ inputs.GDAL_LAYER_ARN }}" \
+            GdalDataPath="${{ inputs.GDAL_DATA_PATH }}" \
+            UrsHostname="${{ inputs.URS_HOSTNAME }}" \
+            UrsUsername="${{ inputs.URS_USERNAME }}" \
+            UrsPassword="${{ inputs.URS_PASSWORD }}" \
+            DomainName="${{ inputs.DOMAIN_NAME }}" \
+            CertificateArn="${{ inputs.CERTIFICATE_ARN }}"
