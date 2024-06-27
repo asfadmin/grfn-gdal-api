@@ -57,7 +57,7 @@ runs:
         aws cloudformation deploy \
           --stack-name ${{ inputs.STACK_NAME }} \
           --template-file packaged.yml \
-          --role-name ${{ inputs.CLOUDFORMATION_ROLE_ARN }} \
+          --role-arn ${{ inputs.CLOUDFORMATION_ROLE_ARN }} \
           --capabilities CAPABILITY_NAMED_IAM \
           --parameter-overrides \
             LogBucket="${{ inputs.LOG_BUCKET }}" \
