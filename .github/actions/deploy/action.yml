@@ -5,6 +5,8 @@ inputs:
     required: true
   AWS_SECRET_ACCESS_KEY:
     required: true
+  CLOUDFORMATION_ROLE_ARN:
+    required: true
   LOG_BUCKET:
     required: true
   LOG_PREFIX:
@@ -27,8 +29,6 @@ inputs:
     required: true
   CERTIFICATE_ARN:
     required: true
-  TEMPLATE_BUCKET:
-    required: true
 
 runs:
   using: composite
@@ -49,11 +49,13 @@ runs:
         sed "s/REPLACEME/$(openssl rand -hex 4)/" cloudformation.yml > cloudformation-replaced.yml
         aws cloudformation package \
           --template-file cloudformation-replaced.yml \
-          --s3-bucket ${{ inputs.TEMPLATE_BUCKET }} \
+          --s3-bucket grfn-build \
+          --s3-prefix cloudformation \
           --output-template-file packaged.yml
         aws cloudformation deploy \
           --stack-name ${{ inputs.STACK_NAME }} \
           --template-file packaged.yml \
+          --role-name ${{ inputs.CLOUDFORMATION_ROLE_ARN }} \
           --capabilities CAPABILITY_IAM \
           --parameter-overrides \
             LogBucket=${{ inputs.LOG_BUCKET }} \

@@ -31,4 +31,4 @@ jobs:
           URS_PASSWORD: ${{ secrets.URS_PASSWORD }}
           DOMAIN_NAME: services.asf.alaska.edu
           CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
-          TEMPLATE_BUCKET: cf-templates-uyq85q2un2ku-us-east-1
+          CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
