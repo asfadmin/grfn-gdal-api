@@ -26,8 +26,6 @@ jobs:
           LOG_PREFIX: s3-access/
           STORAGE_EXPIRATION_IN_DAYS: 1
           PRODUCT_PATH: https://grfn.asf.alaska.edu/door/download/
-          GDAL_LAYER_ARN: ${{ secrets.GDAL_LAYER_ARN }}
-          GDAL_DATA_PATH: /opt/lib/data
           URS_HOSTNAME: urs.earthdata.nasa.gov
           URS_USERNAME: ${{ secrets.URS_USERNAME }}
           URS_PASSWORD: ${{ secrets.URS_PASSWORD }}
