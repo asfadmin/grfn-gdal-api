@@ -11,6 +11,9 @@ updates:
       interval: weekly
     labels:
       - bumpless
+    ignore:
+      # gdal version is dictated by https://github.com/lambgeo/docker-lambda, currently 3.8.3
+      - dependency-name: gdal
   - package-ecosystem: github-actions
     directory: /
     schedule:
