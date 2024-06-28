@@ -11,13 +11,6 @@ Parameters:
   ProductPath:
     Type: String
 
-  GdalLayerArn:
-    Type: String
-
-  GdalDataPath:
-    Type: String
-    Default: /opt/lib/data
-
   SecretArn:
     Type: String
 
@@ -75,7 +68,7 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: !Ref Name
-      Code: src/
+      Code: package.zip
       DeadLetterConfig:
         TargetArn: !GetAtt DeadLetterQueue.Arn
       Environment:
@@ -86,12 +79,11 @@ Resources:
               "product_path": "${ProductPath}",
               "secret_arn": "${SecretArn}"
             }
-          GDAL_DATA: !Ref GdalDataPath
+          GDAL_DATA: /var/task/share/gdal
+          PROJ_LIB: /var/task/share/proj
           HOME: /tmp
       Handler: main.lambda_handler
-      Layers:
-      - !Ref GdalLayerArn
       MemorySize: 3008
       Role: !GetAtt Role.Arn
-      Runtime: python3.8
+      Runtime: python3.11
       Timeout: 30
