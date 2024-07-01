@@ -17,10 +17,6 @@ inputs:
     required: true
   PRODUCT_PATH:
     required: true
-  GDAL_LAYER_ARN:
-    required: true
-  GDAL_DATA_PATH:
-    required: true
   URS_HOSTNAME:
     required: true
   URS_USERNAME:
@@ -47,7 +43,7 @@ runs:
 
     - shell: bash
       run: |
-        pip install -r requirements-reformat.txt -t reformat/src/
+        ./build_deployment_package.sh
         sed "s/REPLACEME/$(openssl rand -hex 4)/" cloudformation.yml > cloudformation-replaced.yml
         aws cloudformation package \
           --template-file cloudformation-replaced.yml \
@@ -64,8 +60,6 @@ runs:
             LogPrefix="${{ inputs.LOG_PREFIX }}" \
             StorageExpirationInDays="${{ inputs.STORAGE_EXPIRATION_IN_DAYS }}" \
             ProductPath="${{ inputs.PRODUCT_PATH }}" \
-            GdalLayerArn="${{ inputs.GDAL_LAYER_ARN }}" \
-            GdalDataPath="${{ inputs.GDAL_DATA_PATH }}" \
             UrsHostname="${{ inputs.URS_HOSTNAME }}" \
             UrsUsername="${{ inputs.URS_USERNAME }}" \
             UrsPassword="${{ inputs.URS_PASSWORD }}" \

@@ -18,13 +18,6 @@ Parameters:
     Type: String
     Default: https://grfn.asf.alaska.edu/door/download/
 
-  GdalLayerArn:
-    Type: String
-
-  GdalDataPath:
-    Type: String
-    Default: /opt/lib/data
-
   UrsHostname:
     Type: String
     Default: urs.earthdata.nasa.gov
@@ -106,8 +99,6 @@ Resources:
         Name: !Sub "${AWS::StackName}-reformat"
         Bucket: !Ref Bucket
         ProductPath: !Ref ProductPath
-        GdalLayerArn: !Ref GdalLayerArn
-        GdalDataPath: !Ref GdalDataPath
         SecretArn: !Ref Secret
       TemplateURL: reformat/cloudformation.yml
 
