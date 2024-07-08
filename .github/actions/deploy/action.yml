@@ -37,10 +37,6 @@ runs:
         aws-secret-access-key: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
-    - uses: actions/setup-python@v5
-      with:
-        python-version: 3.8
-
     - shell: bash
       run: |
         ./build_deployment_package.sh
