@@ -42,7 +42,7 @@ class SimpleVSIMemFileError(Exception):
     """Unknown SimpleVSIMemFile error with VSI subsystem."""
 
 
-class SimpleVSIMEMFile(object):
+class SimpleVSIMEMFile:
     def __init__(self, path):
         """Simple file-like object for reading out of a VSIMEM dataset.
         Params:
@@ -62,11 +62,10 @@ class SimpleVSIMEMFile(object):
         Params:
             size: Number of bytes to read.
         """
-
         length = len(self)
         if self._pos >= length:
             # No more data to read
-            return b""
+            return b''
 
         if size == -1:
             # Set size to remainder of file
@@ -76,7 +75,7 @@ class SimpleVSIMEMFile(object):
             size = min(size, length - self._pos)
 
         # Open file
-        vsif = gdal.VSIFOpenL(self._path, "r")
+        vsif = gdal.VSIFOpenL(self._path, 'r')
         self._check_error()
         try:
             # Seek to current position, read data, and update position
@@ -120,7 +119,7 @@ def get_output_key(product, layer):
     product_basename = path.basename(product)
     product_basename_without_extension = path.splitext(product_basename)[0]
     layer_basename = path.basename(layer)
-    output_key = '{0}/{1}-{2}.tif'.format(prefix, product_basename_without_extension, layer_basename)
+    output_key = f'{prefix}/{product_basename_without_extension}-{layer_basename}.tif'
     return output_key
 
 
@@ -139,7 +138,7 @@ def get_redirect_response(bucket, key):
     return {
         'statusCode': 307,
         'headers': {
-            'Location': 'https://s3.amazonaws.com/{0}/{1}'.format(bucket, key),
+            'Location': f'https://s3.amazonaws.com/{bucket}/{key}',
         },
         'body': None,
     }
@@ -150,7 +149,7 @@ def translate_netcdf_to_geotiff(input_datasource, output_datasource):
     gdal.Translate(
         destName=output_datasource,
         srcDS=handle,
-        creationOptions=['COMPRESS=DEFLATE', 'TILED=YES', 'COPY_SRC_OVERVIEWS=YES']
+        creationOptions=['COMPRESS=DEFLATE', 'TILED=YES', 'COPY_SRC_OVERVIEWS=YES'],
     )
     handle = None
 
