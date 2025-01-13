@@ -6,4 +6,6 @@ dependencies:
   - python=3.11
   - pip
   - pip:
-    - -r requirements-all.txt
+    # requirements-reformat.txt is not included because gdal is annoying to install,
+    # and the conda environment is only needed for running linters.
+    - -r requirements-dev.txt

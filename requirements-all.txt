@@ -1,3 +1,0 @@
--r requirements-reformat.txt
-ruff
-mypy
