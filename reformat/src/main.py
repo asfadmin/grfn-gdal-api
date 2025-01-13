@@ -1,6 +1,6 @@
 import json
+import os
 from logging import getLogger
-from os import chmod, getenv, path, remove
 from urllib.parse import urljoin, urlparse
 from uuid import uuid4
 
@@ -11,7 +11,7 @@ from requests import Session
 
 log = getLogger()
 log.setLevel('INFO')
-config = json.loads(getenv('CONFIG'))
+config = json.loads(os.environ['CONFIG'])
 s3 = boto3.resource('s3')
 secrets_manager = boto3.client('secretsmanager')
 session = Session()
@@ -24,10 +24,10 @@ def get_secret(secret_arn):
 
 
 def write_content_to_netrc_file(netrc_content):
-    netrc_file = path.join(getenv('HOME'), '.netrc')
+    netrc_file = os.path.join(os.environ['HOME'], '.netrc')
     with open(netrc_file, 'w') as f:
         f.write(netrc_content)
-    chmod(netrc_file, 0o600)
+    os.chmod(netrc_file, 0o600)
 
 
 def set_up_netrc(secret_arn):
@@ -116,9 +116,9 @@ class SimpleVSIMEMFile:
 
 def get_output_key(product, layer):
     prefix = uuid4()
-    product_basename = path.basename(product)
-    product_basename_without_extension = path.splitext(product_basename)[0]
-    layer_basename = path.basename(layer)
+    product_basename = os.path.basename(product)
+    product_basename_without_extension = os.path.splitext(product_basename)[0]
+    layer_basename = os.path.basename(layer)
     output_key = f'{prefix}/{product_basename_without_extension}-{layer_basename}.tif'
     return output_key
 
@@ -127,7 +127,7 @@ def download_file(host_url, product):
     download_url = urljoin(host_url, product)
     response = session.get(download_url)
     response.raise_for_status()
-    file_name = path.join('/tmp', product)
+    file_name = os.path.join('/tmp', product)
     with open(file_name, 'wb') as f:
         for block in response.iter_content(1024):
             f.write(block)
@@ -181,7 +181,7 @@ def lambda_handler(event, context):
     try:
         translate_netcdf_to_geotiff(input_datasource, vsimem_datasource)
     finally:
-        remove(input_file_name)
+        os.remove(input_file_name)
 
     output_key = get_output_key(parms['product'], parms['layer'])
     try:
