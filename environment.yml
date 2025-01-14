@@ -1,0 +1,11 @@
+name: grfn-gdal-api
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+    # requirements-reformat.txt is not included because gdal is annoying to install,
+    # and the conda environment is only needed for running linters.
+    - -r requirements-dev.txt
