@@ -13,6 +13,9 @@ and uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 - Replaced `flake8` with `ruff`.
 
+### Fixed
+- Fixed our release workflow. See https://github.com/asfadmin/grfn-gdal-api/issues/53
+
 ## [1.1.1]
 ### Changed
 - Upgraded our GitHub Actions workflows to Python 3.11.
