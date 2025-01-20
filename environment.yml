@@ -4,6 +4,7 @@ channels:
   - nodefaults
 dependencies:
   - python=3.11
+  - gdal=3.8.3
   - pip
   - pip:
     - -r requirements-all.txt
