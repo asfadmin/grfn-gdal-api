@@ -4,8 +4,7 @@ channels:
   - nodefaults
 dependencies:
   - python=3.11
+  - gdal=3.8.3 # Copied from requirements-reformat.txt, required for mypy workflow
   - pip
   - pip:
-    # requirements-reformat.txt is not included because gdal is annoying to install,
-    # and the conda environment is only needed for running linters.
-    - -r requirements-dev.txt
+    - -r requirements-all.txt
