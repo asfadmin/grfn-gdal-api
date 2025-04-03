@@ -21,4 +21,4 @@ jobs:
 
       - shell: bash -l {0}
         run: |
-          cfn-lint --info --ignore-checks W3002 --template **/cloudformation.yml
+          cfn-lint --info --ignore-checks W3002 --template cloudformation.yml **/cloudformation.yml
