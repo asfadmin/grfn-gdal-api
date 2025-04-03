@@ -12,10 +12,13 @@ jobs:
 
   cfn-lint:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
-      - uses: scottbrenner/cfn-lint-action@v2
+      - uses: mamba-org/setup-micromamba@v2
         with:
-          command: cfn-lint --info --ignore-checks W3002 --template **/cloudformation.yml
+          environment-file: environment.yml
+
+      - shell: bash -l {0}
+        run: |
+          cfn-lint --info --ignore-checks W3002 --template **/cloudformation.yml
