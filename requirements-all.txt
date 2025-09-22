@@ -1,4 +1,4 @@
 -r requirements-reformat.txt
 cfn-lint==1.39.1
-ruff==0.12.11
-mypy==1.17.1
+ruff==0.13.1
+mypy==1.18.2
